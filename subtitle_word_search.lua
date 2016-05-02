@@ -317,32 +317,39 @@ function search_corresponding_subtitle_at_time(time)
 	local eof, exceeded, found = false, false, false
 	local current_index = 1
     
-	-- Iterates from the begining of the file until the subtitle is found, or there is no subtitle at that time, or the end of the file is reached
+	-- Iterates from the begining of the file's text until the subtitle is found, or there is no subtitle at that time, or the end of the file is reached
 	local apperance_time_interval_limits
-	repeat
+	while (true) do
 	    apperance_time_interval_limits = get_next_appearance_time_interval(current_index)
-		if (apperance_time_interval_limits) then
-		    -- Remember the appearance time interval position and check if it's the one we are looking for
-		    record_appearance_time(apperance_time_interval_limits)
-			
+		if (apperance_time_interval_limits) then			
 			local appearance_time_interval = text:sub(apperance_time_interval_limits.start_index, apperance_time_interval_limits.finish_index)
 			
 			local timestamps = extract_timestamps(appearance_time_interval)
 			local comparison_result = compare_time_to_interval(timestamps, time)
-			found = (comparison_result == 0)
-			exceeded = (comparison_result < 0) -- The subtitle's appearance time has exceeded the current time
-			current_index = apperance_time_interval_limits.finish_index
+			if (comparison_result == 0) then
+			    record_appearance_time(apperance_time_interval_limits)
+			    found = true
+				break
+		    elseif (comparison_result < 0) then
+			-- The subtitle's appearance time has exceeded the current time
+			    record_appearance_time({})
+			    exceeded = true
+				break
+			else
+			    -- Remember the appearance time interval position
+		        record_appearance_time(apperance_time_interval_limits)
+			    current_index = apperance_time_interval_limits.finish_index
+			end
 		else
+		    record_appearance_time({})
 		    eof = true
+			break
 		end
-	until (found or exceeded or eof)
+	end
 	
 	if (found) then
 	    return extract_subtitle_frame_fragment_text(apperance_time_interval_limits.finish_index)
-	elseif (exceeded) then
-	    pop_appearance_time()
-	    return nil
-	else
+	elseif (exceeded or eof) then
 	    return nil
 	end
 end
@@ -440,30 +447,44 @@ end
 
 --- Shows the words in the list widget corresponding to the subtitle that goes before the current one in the historic of appearance times
 function navigate_backward()
-    local previous_appearance_time
+    local previous_appearance_time_interval_limits
 	
 	if (current_historic_apperance_time > 1) then
-	    current_historic_apperance_time = current_historic_apperance_time - 1
-	    previous_appearance_time = historic_appearance_times[current_historic_apperance_time]
+	    current_appearance_time_interval_limits = historic_appearance_times[current_historic_apperance_time]
 		
-		local subtitle = extract_subtitle_frame_fragment_text(previous_appearance_time.finish_index)
-	    show_subtitle_and_time(subtitle, previous_appearance_time)
+		if (not current_appearance_time_interval_limits.start_index) then
+		-- The last registered entry is empty, that means: there is no subtitle at the current time   
+		    pop_appearance_time()	
+		else
+		    current_historic_apperance_time = current_historic_apperance_time - 1
+		end
+	    previous_appearance_time_interval_limits = historic_appearance_times[current_historic_apperance_time]
+		
+		local subtitle = extract_subtitle_frame_fragment_text(previous_appearance_time_interval_limits.finish_index)
+	    show_subtitle_and_time(subtitle, previous_appearance_time_interval_limits)
 	end
 end
 
 --- Shows the words in the list widget corresponding to the subtitle that goes after the current one in the historic of appearance times
 function navigate_forward()
-    local subtitle
+	local subtitle
 	
     local next_apperance_time_interval_limits
 	if (current_historic_apperance_time == #historic_appearance_times) then
 	    local current_finish_index
-	    if (current_historic_apperance_time == 0) then
-	        current_finish_index = 1
-	    else
-	        local current_appearance_time_interval_limits = historic_appearance_times[current_historic_apperance_time]
-	        current_finish_index = current_appearance_time_interval_limits.finish_index
-	    end
+		
+	    local current_appearance_time_interval_limits = historic_appearance_times[current_historic_apperance_time]
+	    if (not current_appearance_time_interval_limits.start_index) then
+		-- The last registered entry is empty, that means there is no subtitle at the current time
+		    pop_appearance_time()
+		end
+		
+		if (current_historic_apperance_time == 0) then
+		    current_finish_index = 1
+		else
+		    current_appearance_time_interval_limits = historic_appearance_times[current_historic_apperance_time]
+		    current_finish_index = current_appearance_time_interval_limits.finish_index
+		end
 		
 	    next_apperance_time_interval_limits = get_next_appearance_time_interval(current_finish_index)
 		if (next_apperance_time_interval_limits) then
