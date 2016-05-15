@@ -7,7 +7,7 @@ License: GNU GENERAL PUBLIC LICENSE
 
 function descriptor()
     return { title = "Subtitle Word Search",
-             version = "1.0",
+             version = "1.1",
              author = "Tomás Crespo",
              url = "https://github.com/tcrespog/vlc-subtitle-word-search",
              shortdesc = "Subtitle Word Search",
@@ -38,6 +38,9 @@ text = nil
 -- Array containing the paths to the discovered subtitle files corresponding to the current video
 subtitle_files_paths = nil
 
+-- The current playing time timestamp
+current_timestamp = nil
+
 ------- GUI elements -------
 dlg = nil
 dropdown_search_engines = nil
@@ -58,10 +61,13 @@ function draw_dialog()
     dlg:add_button("Load", process_subtitle_file_loading, 2, 2)
 	
 	dlg:add_label("<h2>Subtitle words</h2>", 1, 3)
+	
 	dlg:add_button("Refresh", process_words_capture, 1, 4)
 	dlg:add_button("<<", navigate_backward, 2, 4)
-	timestamp_label = dlg:add_label("", 3, 4)
+	timestamp_label = dlg:add_label("00:00:00", 3, 4)
 	dlg:add_button(">>", navigate_forward, 4, 4)
+	dlg:add_button("Go", go_to_subtitle_time, 5, 4)
+	
 	list_words = dlg:add_list(1, 5, 5, 1)
 	
 	dlg:add_label("<h2>Word Search</h2>", 1, 6)
@@ -110,8 +116,18 @@ end
 --- Draws a timestamp in the specific label
 --  @param timestamp {string} The timestamp in hh:mm:ss,SSS format
 function draw_subtitle_timestamp(timestamp)
+    -- Store the current timestamp
+    current_timestamp = timestamp
+    
     local processed_timestamp = timestamp:match("%d+:%d+:%d+")
 	timestamp_label:set_text(processed_timestamp)
+end
+
+--- Reads the timestamp placed at the corresponding button and visits that time in the video
+function go_to_subtitle_time()
+    local location_time = convert_timestamp_to_time(current_timestamp)
+
+    vlc.var.set(vlc.object.input(), "time", location_time)
 end
 
 --- Draws the subtitle files in the corresponding dropdown widget
@@ -158,7 +174,7 @@ function process_words_capture()
 		else
 		    draw_subtitle_words("")
 		end
-		timestamp_label:set_text(convert_seconds_to_timestamp(current_playing_time))
+		draw_subtitle_timestamp(convert_time_to_timestamp(current_playing_time))
 	end
 end
 
@@ -404,7 +420,7 @@ end
 --  @return {number} The time in seconds
 function convert_timestamp_to_time(timestamp)
 	local hours, minutes, seconds, millis = timestamp:match("(%d+):(%d+):(%d+),(%d+)")
-	
+
 	return tonumber(hours) * 3600 + tonumber(minutes) * 60 + tonumber(seconds) + tonumber(millis) / 1000
 end
 
@@ -606,9 +622,9 @@ function get_selected_search_engine()
 end
 
 --- Converts a number of seconds to a timestamp in hh:mm:ss format
---  @param seconds {number} The number of seconds to convert
+--  @param seconds {number} The time to convert in seconds
 --  @return {string} the timestamp in hh:mm:ss format
-function convert_seconds_to_timestamp(seconds_to_convert)
+function convert_time_to_timestamp(seconds_to_convert)
 	local hours = math.floor( seconds_to_convert / 3600 )
     local minutes = math.floor( (seconds_to_convert % 3600) / 60 )
 	local seconds = math.floor( (seconds_to_convert % 60) )
