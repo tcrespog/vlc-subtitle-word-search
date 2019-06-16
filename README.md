@@ -6,12 +6,18 @@ Search for words of the current video SRT subtitle files in VLC
 
 With this VLC extension you can search on Internet search engines the words displayed in the SRT subtitles of a video. This way you can look up online dictionaries to get translations, meanings, and others.
 
-Tested with:
+The extension is published at [addons.videolan.org](http://addons.videolan.org/content/show.php/Subtitle+Word+Search?content=175924).
 
+## Versions
+To download the specific versions check [releases](https://github.com/tcrespog/vlc-subtitle-word-search/releases):
+
+### v1.1
+Tested with:
 * Windows 10: VLC 2.2.2
 * Linux Mint 17.3: VLC 2.1.6
-
-The extension is published at [addons.videolan.org](http://addons.videolan.org/content/show.php/Subtitle+Word+Search?content=175924).
+### v1.2
+Tested with:
+* Windows 10: VLC 3.0.7.1
 
 # Installation
 
@@ -79,7 +85,7 @@ While watching a movie, open the extension and keep it opened. Whenever you want
 
 # Contribution
 
-The plugin was created using the VLC Lua guide in this specific version:
+The extension was created using the VLC Lua guide in this specific version:
 - [README.txt](https://github.com/videolan/vlc/blob/d7a88fe038a9a1d56773d576365d4f6243f4d450/share/lua/README.txt)
 
 You can check the [history](https://github.com/videolan/vlc/commits/master/share/lua/README.txt) of the file to track changes in the API.

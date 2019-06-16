@@ -8,7 +8,7 @@ License: GNU GENERAL PUBLIC LICENSE
 function descriptor()
     return {
         title = "Subtitle Word Search",
-        version = "1.1",
+        version = "1.2",
         author = "Tomás Crespo",
         url = "https://github.com/tcrespog/vlc-subtitle-word-search",
         shortdesc = "Subtitle Word Search",
@@ -126,9 +126,9 @@ end
 
 --- Reads the timestamp placed at the corresponding button and visits that time in the video
 function go_to_subtitle_time()
-    local location_time = convert_timestamp_to_time(current_timestamp)
+    local location_time_microseconds = convert_timestamp_to_time(current_timestamp) * 1000000
 
-    vlc.var.set(vlc.object.input(), "time", location_time)
+    vlc.var.set(vlc.object.input(), "time", location_time_microseconds)
 end
 
 --- Draws the subtitle files in the corresponding dropdown widget
@@ -190,7 +190,9 @@ end
 --- Gets the current playing time of the video
 -- @return {number} the current playing time in seconds
 function get_current_time()
-    return vlc.var.get(vlc.object.input(), "time")
+    local current_time_microseconds = vlc.var.get(vlc.object.input(), "time")
+
+    return current_time_microseconds / 1000000
 end
 
 --- Splits a subtitle in clean words
