@@ -76,3 +76,12 @@ While watching a movie, open the extension and keep it opened. Whenever you want
 ### Refresh the current time's subtitle
 
 ![alt text](https://raw.githubusercontent.com/tcrespog/vlc-subtitle-word-search/static/demonstrations/refresh.gif "Refresh the subtitle demonstration")
+
+# Contribution
+
+The plugin was created using the VLC Lua guide in this specific version:
+- [README.txt](https://github.com/videolan/vlc/blob/d7a88fe038a9a1d56773d576365d4f6243f4d450/share/lua/README.txt)
+
+You can check the [history](https://github.com/videolan/vlc/commits/master/share/lua/README.txt) of the file to track changes in the API.
+
+The VLC [forum](https://forum.videolan.org/viewforum.php?f=29) is useful to solve doubts about plugin development.
