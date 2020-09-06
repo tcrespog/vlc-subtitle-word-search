@@ -163,7 +163,9 @@ function go_to_subtitle_timestamp()
 
     local current_subtitle_line = current_subtitle_file:shift_lines(0)
 
-    vlc.var.set(vlc.object.input(), "time", current_subtitle_line:get_start():to_microseconds())
+    if (current_subtitle_line) then
+        vlc.var.set(vlc.object.input(), "time", current_subtitle_line:get_start():truncate_to_seconds():to_microseconds())
+    end
 end
 
 -- Look up a word in a search engine.
@@ -895,7 +897,6 @@ function Timestamp:add_microseconds(microseconds)
     return Timestamp.of_microseconds(result_microseconds)
 end
 
-
 -- Compares this timestamp to the given timestamp.
 -- @param t {Timestamp} The timestamp to compare to.
 -- @return {number} A negative number if this is lower than `t`, a positive number if this is greater than `t`, zero if both are equal.
@@ -907,6 +908,13 @@ function Timestamp:compare_to(t)
     else
         return 0
     end
+end
+
+-- Truncates the timestamp to second precision (ignoring milliseconds).
+-- @return {Timestamp} A new instance of timestamp truncated to second precision.
+function Timestamp:truncate_to_seconds()
+    local text_without_milliseconds = self:to_string() .. ",000"
+    return Timestamp.of_text(text_without_milliseconds)
 end
 
 -- Checks whether a timestamp is within the bounds of the video length or not.

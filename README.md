@@ -53,7 +53,7 @@ Copy the `subtitle_word_search.lua` file in one of the following directories dep
 * Forward the playing time, click the **Refresh** button and see the updated subtitles.
 * Select a word, select a search engine, and click the **Search** button.
 	* The web content will be displayed in the box at the bottom. You can also open the query link in your browser clicking the generated **Open in browser** link.
-	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the **Remove <head> tag** box before making a search. 
+	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the **Remove &lt;head&gt; tag** box before making a search. 
 
 ## Tips
 
