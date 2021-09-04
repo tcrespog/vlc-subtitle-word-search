@@ -10,19 +10,7 @@ This way you can look up online dictionaries to get translations, meanings, and 
 The extension is published at [addons.videolan.org](http://addons.videolan.org/content/show.php/Subtitle+Word+Search?content=175924).
 
 ## Versions
-To download the specific versions check [releases](https://github.com/tcrespog/vlc-subtitle-word-search/releases):
-
-### v1.3
-Tested with:
-* Windows 10: VLC 3.0.8
-* Ubuntu 20.04: VLC 3.0.8
-### v1.2
-Tested with:
-* Windows 10: VLC 3.0.7.1
-### v1.1
-Tested with:
-* Windows 10: VLC 2.2.2
-* Linux Mint 17.3: VLC 2.1.6
+Check [releases](https://github.com/tcrespog/vlc-subtitle-word-search/releases) to download a specific version.
 
 # Installation
 
@@ -42,18 +30,18 @@ Copy the `subtitle_word_search.lua` file in one of the following directories dep
 
 ## Usage
 
-* Open the extension clicking the *View > Subtitle Word Search* menu.
-* The extension looks for all the external .srt subtitle files located in the same directory of the movie file with the same name as the video file, the same subtitles that VLC detects automatically.
-	* Select a subtitle file from the dropdown widget and load it clicking the **Load** button (when the extension is open, one subtitle file will be loaded by default).
-	* The subtitle track synchronization **delay** is taken into account. Once you change it, click the **Load** button to apply it.
+* Open the extension clicking the "*View > Subtitle Word Search*" menu.
+* The extension looks for all the external `.srt` subtitle files located in the same directory of the video file and with the same name as it. Those are the same subtitles that VLC detects automatically.
+	* Select a subtitle file from the dropdown widget and load it clicking the "**Load**" button (when the extension is opened, one subtitle file will be loaded by default).
+	* The subtitle track synchronization **delay** is taken into account. Once you change it, click the "**Load**" button to apply it.
 * The split words corresponding to the current playing time of the movie are displayed in a list.
-* Transform the text checking the **Lower** (transform to lower case) or **Symbol** (keep punctuation symbols) boxes and clicking the **Transform** button. The transformations will be performed anyway for the next subtitles.
-* Navigate through the subtitles behind/ahead of the current time clicking the **<<** and **>>** buttons.
-* Jump to the location in the video of the subtitle you are viewing with the **Go** button.
-* Forward the playing time, click the **Refresh** button and see the updated subtitles.
-* Select a word, select a search engine, and click the **Search** button.
-	* The web content will be displayed in the box at the bottom. You can also open the query link in your browser clicking the generated **Open in browser** link.
-	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the **Remove &lt;head&gt; tag** box before making a search. 
+* Transform the text checking the "**Lower**" (transform to lower case) or "**Symbol**" (keep punctuation symbols) boxes and clicking the "**Transform**" button. The transformations will be performed anyway for the previous/next subtitles.
+* Navigate through the subtitles behind or ahead of the current time clicking the "**<<**" or "**>>**" buttons respectively.
+* Jump to the location in the video of the subtitle you are viewing with the "**Go**" button.
+* Change the playing time, click the "**Refresh**" button and see the updated subtitles.
+* Select a word, select a search engine, and click the "**Search**" button.
+	* The web content will be displayed in the box at the bottom. You can also open the query link in your browser by clicking the "**Open in browser**" link.
+	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the "**Remove &lt;head&gt; tag**" box before making a search. 
 
 ## Tips
 
@@ -71,7 +59,7 @@ search_engines = {
 ```
 Make sure the search engine URL has the `%s` text in place of the query text.
 
-### Keep the extension opened
+### Keep the extension open
 While watching a movie, open the extension and keep it open. Whenever you want to look up a word: pause the video, check the extension, click the refresh button and make your search.
 
 ### Use it to hide subtitles
