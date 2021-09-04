@@ -18,14 +18,16 @@ function descriptor()
 end
 
 -- Add your favourite search engines here, just add another entry of the type {name = "<Your name>", url = "<Your URL>"}
--- Make sure that the search engine has the %s text in the place of the text to search
+-- Make sure the search engine has the %s text in place of the text to search
 search_engines = {
     { name = "Wikitionary", url = "http://en.wiktionary.org/wiki/%s" },
     { name = "WordReference EN-ES", url = "http://www.wordreference.com/enes/%s" },
     { name = "Wikipedia", url = "https://en.wikipedia.org/wiki/%s" },
-    { name = "Urban Dictionary", url = "http://www.urbandictionary.com/define.php?term=%s" },
+    { name = "Cambridge", url = "https://dictionary.cambridge.org/search/direct/?datasetsearch=english&q=%s" },
+    { name = "Collins", url = "https://www.collinsdictionary.com/search/?dictCode=english&q=%s" },
+    { name = "Merriam-Webster", url = "https://www.merriam-webster.com/dictionary/%s" },
     { name = "Vocabulary", url = "https://www.vocabulary.com/dictionary/%s" },
-    { name = "Cambridge", url = "https://dictionary.cambridge.org/dictionary/english/%s" }
+    { name = "Urban Dictionary", url = "http://www.urbandictionary.com/define.php?term=%s" },
 }
 
 ---------- VLC entrypoints ----------
