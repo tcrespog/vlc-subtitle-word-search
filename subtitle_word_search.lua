@@ -37,8 +37,12 @@ function activate()
     load_subtitle_file()
 end
 
+function deactivate()
+    vlc.deactivate()
+end
+
 function close()
-    vlc.deactivate();
+    deactivate()
 end
 
 ---------- Initialization functions ----------
