@@ -669,6 +669,10 @@ end
 -- @param line {string} The file line to read.
 -- @return {string} An error message if something goes wrong, `nil` if everything goes well
 function SrtReader:process_line(line)
+    if (self.current_line_number == 1) then
+        line = filter_utf8_bom(line)
+    end
+
     local error_message
     if (self.current_state == SrtReader.READING_NUMBER) then
         error_message = self:process_number(line)
@@ -934,6 +938,20 @@ function is_blank(s)
     end
 
     return false
+end
+
+-- Remove the UTF-8 BOM initial mark from a string if present.
+-- @param s {string} The string to process.
+-- @return {string} The string without the mark if present; the string itself otherwise.
+function filter_utf8_bom(s)
+    local bom_mark = '^' .. string.char(239) .. string.char(187) .. string.char(191)
+
+    local start, finish = s:find(bom_mark)
+    if (start) then
+        return s:sub(finish + 1, -1)
+    end
+
+    return s
 end
 
 -- Check if the current operating system is Unix-like.
