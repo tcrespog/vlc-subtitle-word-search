@@ -109,7 +109,11 @@ function load_subtitle_file()
         end
     else
         local video_directory, video_filename = get_video_file_location()
-        gui:print_error_message("No subtitle files found at '" .. video_directory .. "' for the file '" .. video_filename .. "'")
+        if (video_directory) then
+            gui:print_error_message("No subtitle files found at '" .. video_directory .. "' for the file '" .. video_filename .. "'")
+        else 
+            gui:print_error_message("No item playing")
+        end        
     end
 end
 
@@ -444,6 +448,10 @@ function SubtitleFileDiscoverer:discover_files()
     local subtitle_files = {}
 
     local video_dir_path, video_filename = get_video_file_location()
+    if (not video_dir_path) then
+        return subtitle_files
+    end
+
     local video_filename_no_ext = video_filename:match("^(.+)%..+$")
     if (is_unix_os()) then
         video_dir_path = "/" .. video_dir_path
@@ -527,7 +535,7 @@ function SubtitleFile:get_path()
     return self.path
 end
 
--- Search the subtitle line at the give timestamp.
+-- Search the subtitle line at the given timestamp.
 -- Performs a binary search over the ordered subtitle lines.
 -- Updates the value of the current line index, which would point to an index with fractional part if nothing was found.
 -- @param {Timestamp} The timestamp to search the subtitle at.
@@ -1006,6 +1014,10 @@ end
 -- @return {string} The absolute directory path where the file is located (separated by slashes and without root slash).
 -- @return {string} The name of the video file.
 function get_video_file_location()
+    if (not vlc.input.item()) then
+        return nil, nil
+    end
+
     local decoded_media_uri = vlc.strings.decode_uri(vlc.input.item():uri())
     local directory_path, filename = decoded_media_uri:match("^file:///(.+/)(.+%..+)$")
 
