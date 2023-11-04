@@ -30,6 +30,11 @@ search_engines = {
     { name = "Urban Dictionary", url = "https://www.urbandictionary.com/define.php?term=%s" },
 }
 
+---------- Module declaration ----------
+
+-- Declare module so as to be able to unit test some components
+local M = {};
+
 ---------- VLC entrypoints ----------
 
 function activate()
@@ -407,7 +412,7 @@ end
 -- @param word {string} The word to look up.
 function OnlineSearch:prepare_url(word)
     local query_place_regex = "%%s"
-    local encoded_term = encode_uri_component(word)
+    local encoded_term = M.encode_uri_component(word)
     self.prepared_url = self.search_engine_url:gsub(query_place_regex, encoded_term)
 end
 
@@ -1065,8 +1070,16 @@ function download_content(url)
     return table.concat(string_buffer)
 end
 
-function encode_uri_component(str)
-    return string.gsub(str, "[^%w%-_%.!~%*%(%)]", function(ch)
-        return string.format("%%02X", string.byte(ch))
+function M.encode_uri_component(str)
+    local encoded = string.gsub(str, "[^%w%-_%.~]", function(ch)
+        return string.format("%%%02X", string.byte(ch))
     end)
+
+    -- Escape % char
+    encoded = encoded:gsub("%%", "%%%%")
+
+    return encoded;
 end
+
+-- Return module
+return M;
