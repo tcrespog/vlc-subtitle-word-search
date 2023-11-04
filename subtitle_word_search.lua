@@ -27,7 +27,7 @@ search_engines = {
     { name = "Collins", url = "https://www.collinsdictionary.com/search/?dictCode=english&q=%s" },
     { name = "Merriam-Webster", url = "https://www.merriam-webster.com/dictionary/%s" },
     { name = "Vocabulary", url = "https://www.vocabulary.com/dictionary/%s" },
-    { name = "Urban Dictionary", url = "http://www.urbandictionary.com/define.php?term=%s" },
+    { name = "Urban Dictionary", url = "https://www.urbandictionary.com/define.php?term=%s" },
 }
 
 ---------- VLC entrypoints ----------
@@ -407,13 +407,14 @@ end
 -- @param word {string} The word to look up.
 function OnlineSearch:prepare_url(word)
     local query_place_regex = "%%s"
-    self.prepared_url = self.search_engine_url:gsub(query_place_regex, word)
+    local encoded_term = encode_uri_component(word)
+    self.prepared_url = self.search_engine_url:gsub(query_place_regex, encoded_term)
 end
 
 -- Generates an HTML hyperlink to the query URL.
 -- @return {string} The HTML hyperlink.
 function OnlineSearch:generate_html_hyperlink()
-    return "<p><a href=" .. self.prepared_url .. "><strong>Open in browser</strong></a></p>"
+    return "<p><a href=\"" .. self.prepared_url .. "\" target=\"_blank\"><strong>Open in browser</strong></a></p>"
 end
 
 
@@ -1062,4 +1063,10 @@ function download_content(url)
     until (not line)
 
     return table.concat(string_buffer)
+end
+
+function encode_uri_component(str)
+    return string.gsub(str, "[^%w%-_%.!~%*%(%)]", function(ch)
+        return string.format("%%02X", string.byte(ch))
+    end)
 end
