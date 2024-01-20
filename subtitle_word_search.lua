@@ -211,174 +211,175 @@ end
 
 ---------- Classes ----------
 
--- Class: Gui.
+-- class Gui
 -- Renders the GUI (Graphical User Interface).
 Gui = {}
 Gui.__index = Gui
 
--- Constructor method. Create the GUI instance.
-function Gui.new()
-    local self = setmetatable({}, Gui)
-    -- dialog {vlc.dialog} The VLC dialog.
-    self.dialog = nil
-    -- files_dropdown {vlc.dropdown} The subtitle files dropdown.
-    self.files_dropdown = nil
-    -- lower_checkbox {vlc.checkbox} The text to lower case checkbox flag.
-    self.lower_checkbox = nil
-    -- symbol_checkbox {vlc.checkbox} The text to punctuation strip checkbox flag.
-    self.symbol_checkbox = nil
-    -- timestamp_label {vlc.label} The current timestamp label.
-    self.timestamp_label = nil
-    -- words_list {vlc.list} The words list widget.
-    self.words_list = nil
-    -- search_engines_dropdown {vlc.dropdown} The search engines dropdown.
-    self.search_engines_dropdown = nil
-    -- remove_head_checkbox {vlc.checkbox} The HTML remove head checkbox flag.
-    self.remove_head_checkbox = nil
-    -- html_text_box {vlc.html} The text box to render the web HTML.
-    self.html_text_box = nil
-    -- last_row {number} The last row in the grid being constructed.
-    self.last_row = 1
-    return self
-end
-
--- Render the VLC extension grid dialog.
-function Gui:render()
-    self.dialog = vlc.dialog("Subtitle Word Search")
-
-    self:draw_file_section()
-    self:draw_subtitle_section()
-    self:draw_online_search_section()
-
-    self.dialog:show()
-end
-
--- Increment the index of the last row in the GUI and returns the value previous to the increment.
--- Equivalent to the typical construct `n++` of other programming languages.
--- @return {number} The last row number value previous to the increment.
-function Gui:increment_row()
-    local previous_last_row = self.last_row
-    self.last_row = self.last_row + 1
-    return previous_last_row
-end
-
--- Draw the subtitle files selector section.
-function Gui:draw_file_section()
-    self.dialog:add_label("<h2>Subtitles file</h2>", 1, self:increment_row(), 5, 1)
-    self.files_dropdown = self.dialog:add_dropdown(1, self.last_row, 1)
-    self.dialog:add_button("Load", load_subtitle_file, 2, self:increment_row())
-end
-
--- Draw the subtitle navigation and word selection section.
-function Gui:draw_subtitle_section()
-    self.dialog:add_label("<h2>Subtitle words</h2>", 1, self:increment_row())
-
-    self.dialog:add_button("Transform", navigate_still, 1, self.last_row)
-    self.lower_checkbox = self.dialog:add_check_box("Lower", true, 2, self.last_row)
-    self.symbol_checkbox = self.dialog:add_check_box("Symbols", false, 3, self:increment_row())
-
-    self.dialog:add_button("Refresh", capture_words_at_now, 1, self.last_row)
-    self.dialog:add_button("<<", navigate_backward, 2, self.last_row)
-    self.timestamp_label = self.dialog:add_label("00:00:00", 3, self.last_row)
-    self.dialog:add_button(">>", navigate_forward, 4, self.last_row)
-    self.dialog:add_button("Go", go_to_subtitle_timestamp, 5, self:increment_row())
-
-    self.words_list = self.dialog:add_list(1, self:increment_row(), 5, 1)
-end
-
--- Draw the search section.
-function Gui:draw_online_search_section()
-    self.dialog:add_label("<h2>Word Search</h2>", 1, self:increment_row())
-    self.remove_head_checkbox = self.dialog:add_check_box("Remove <head> tag", false, 1, self:increment_row())
-    self.search_engines_dropdown = self.dialog:add_dropdown(1, self.last_row)
-    self.dialog:add_button("Search", search_word, 2, self:increment_row())
-    self.html_text_box = self.dialog:add_html("", 1, self.last_row, 5, 10)
-end
-
--- Add a file name to the corresponding dropdown widget.
--- @param name {string} The subtitle file name.
--- @param index {number} The search engine index in the global array of subtitle files.
-function Gui:inject_subtitle_file(name, index)
-    self.files_dropdown:add_value(name, index)
-end
-
--- Add a search engine to the corresponding dropdown widget.
--- @param name {string} The search engine name.
--- @param index {number} The search engine index in the global array of engines.
-function Gui:inject_search_engine(name, index)
-    self.search_engines_dropdown:add_value(name, index)
-end
-
--- Show the split words from a subtitle in the list widget.
--- @param subtitle {string} the subtitle to show.
-function Gui:inject_subtitle_words(text)
-    self.words_list:clear()
-
-    local to_lower = self.lower_checkbox:get_checked()
-    local strip_punctuation = not self.symbol_checkbox:get_checked()
-
-    local words = split_words(text, to_lower, strip_punctuation)
-    for index, word in ipairs(words) do
-        self.words_list:add_value(word, index)
+    -- Constructor method. Create the GUI instance.
+    function Gui.new()
+        local self = setmetatable({}, Gui)
+        -- dialog {vlc.dialog} The VLC dialog.
+        self.dialog = nil
+        -- files_dropdown {vlc.dropdown} The subtitle files dropdown.
+        self.files_dropdown = nil
+        -- lower_checkbox {vlc.checkbox} The text to lower case checkbox flag.
+        self.lower_checkbox = nil
+        -- symbol_checkbox {vlc.checkbox} The text to punctuation strip checkbox flag.
+        self.symbol_checkbox = nil
+        -- timestamp_label {vlc.label} The current timestamp label.
+        self.timestamp_label = nil
+        -- words_list {vlc.list} The words list widget.
+        self.words_list = nil
+        -- search_engines_dropdown {vlc.dropdown} The search engines dropdown.
+        self.search_engines_dropdown = nil
+        -- remove_head_checkbox {vlc.checkbox} The HTML remove head checkbox flag.
+        self.remove_head_checkbox = nil
+        -- html_text_box {vlc.html} The text box to render the web HTML.
+        self.html_text_box = nil
+        -- last_row {number} The last row in the grid being constructed (starts at 0: no row).
+        self.last_row = 0
+        return self
     end
-end
 
--- Get the index of the selected subtitle file in the corresponding dropdown widget.
--- @return {number} The index of the selected file.
-function Gui:get_selected_subtitle_file_index()
-    return self.files_dropdown:get_value()
-end
+    -- Render the VLC extension grid dialog.
+    function Gui:render()
+        self.dialog = vlc.dialog("Subtitle Word Search")
 
--- Get the selected search engine index in the corresponding dropdown widget.
--- @return {number} The selected search engine index.
-function Gui:get_selected_search_engine_index()
-    return self.search_engines_dropdown:get_value()
-end
+        self:draw_file_section()
+        self:draw_subtitle_section()
+        self:draw_online_search_section()
 
--- Get the first selected word in the corresponding list widget.
--- @return {string} The first selected word, `nil` if nothing was selected
-function Gui:get_first_selected_word()
-    local selection = self.words_list:get_selection()
+        self.dialog:show()
+    end
 
-    if (selection) then
-        for index, selected_word in pairs(selection) do
-            return selected_word
+    -- Increment the index of the last row in the GUI and return it.
+    -- Equivalent to the typical construct `++n` of other programming languages.
+    -- @return {number} The last row number after the increment.
+    function Gui:increment_row()
+        self.last_row = self.last_row + 1
+        return self.last_row
+    end
+
+    -- Draw the subtitle files selector section.
+    function Gui:draw_file_section()
+        self.dialog:add_label("<b>Subtitles file</b>", 1, self:increment_row(), 5, 1)
+        self.files_dropdown = self.dialog:add_dropdown(1, self:increment_row(), 4, 1)
+        self.dialog:add_button("Load", load_subtitle_file, 5, self.last_row, 1, 1)
+    end
+
+    -- Draw the subtitle navigation and word selection section.
+    function Gui:draw_subtitle_section()
+        self.dialog:add_label("<b>Subtitle words</b>", 1, self:increment_row(), 5, 1)
+
+        self.dialog:add_button("Transform", navigate_still, 1, self:increment_row(), 3, 1)
+        self.lower_checkbox = self.dialog:add_check_box("Lower", true, 4, self.last_row, 1, 1)
+        self.symbol_checkbox = self.dialog:add_check_box("Symbols", false, 5, self.last_row, 1, 1)
+
+        self.dialog:add_button("Refresh", capture_words_at_now, 1, self:increment_row(), 1, 1)
+        self.dialog:add_button("<<", navigate_backward, 2, self.last_row, 1, 1)
+        self.timestamp_label = self.dialog:add_label("00:00:00", 3, self.last_row, 1, 1)
+        self.dialog:add_button(">>", navigate_forward, 4, self.last_row, 1, 1)
+        self.dialog:add_button("Go", go_to_subtitle_timestamp, 5, self.last_row, 1, 1)
+
+        self.words_list = self.dialog:add_list(1, self:increment_row(), 5, 1)
+    end
+
+    -- Draw the search section.
+    function Gui:draw_online_search_section()
+        self.dialog:add_label("<b>Word Search</b>", 1, self:increment_row(), 5, 1)
+        self.search_engines_dropdown = self.dialog:add_dropdown(1, self:increment_row(), 3, 1)
+        self.remove_head_checkbox = self.dialog:add_check_box("Remove style", false, 4, self.last_row, 1 ,1)
+        self.dialog:add_button("Search", search_word, 5, self.last_row, 1, 1)
+        self.html_text_box = self.dialog:add_html("", 1, self:increment_row(), 5, 1)
+        self:print_html("<p><em>Search result goes here.</em></p>")
+    end
+
+    -- Add a file name to the corresponding dropdown widget.
+    -- @param name {string} The subtitle file name.
+    -- @param index {number} The search engine index in the global array of subtitle files.
+    function Gui:inject_subtitle_file(name, index)
+        self.files_dropdown:add_value(name, index)
+    end
+
+    -- Add a search engine to the corresponding dropdown widget.
+    -- @param name {string} The search engine name.
+    -- @param index {number} The search engine index in the global array of engines.
+    function Gui:inject_search_engine(name, index)
+        self.search_engines_dropdown:add_value(name, index)
+    end
+
+    -- Show the split words from a subtitle in the list widget.
+    -- @param subtitle {string} the subtitle to show.
+    function Gui:inject_subtitle_words(text)
+        self.words_list:clear()
+
+        local to_lower = self.lower_checkbox:get_checked()
+        local strip_punctuation = not self.symbol_checkbox:get_checked()
+
+        local words = split_words(text, to_lower, strip_punctuation)
+        for index, word in ipairs(words) do
+            self.words_list:add_value(word, index)
         end
-    else
-        return nil
     end
-end
 
--- Gets the value of the remove HTML head checkbox flag.
--- @return {boolean} `true` if the checkbox is checked, `false` otherwise.
-function Gui:get_remove_head_flag()
-    return self.remove_head_checkbox:get_checked()
-end
+    -- Get the index of the selected subtitle file in the corresponding dropdown widget.
+    -- @return {number} The index of the selected file.
+    function Gui:get_selected_subtitle_file_index()
+        return self.files_dropdown:get_value()
+    end
 
--- Print a timestamp in the specific label.
--- @param timestamp {Timestamp} The timestamp to print.
-function Gui:print_timestamp(timestamp)
-    self.timestamp_label:set_text(timestamp:to_string())
-end
+    -- Get the selected search engine index in the corresponding dropdown widget.
+    -- @return {number} The selected search engine index.
+    function Gui:get_selected_search_engine_index()
+        return self.search_engines_dropdown:get_value()
+    end
 
--- Print a HTML text in the corresponding widget.
--- @param html {string} The HTML text content.
-function Gui:print_html(html)
-    self.html_text_box:set_text(html)
-end
+    -- Get the first selected word in the corresponding list widget.
+    -- @return {string} The first selected word, `nil` if nothing was selected
+    function Gui:get_first_selected_word()
+        local selection = self.words_list:get_selection()
 
--- Print a red-colored HTML error message.
--- @param error_message {string} The error message to print.
-function Gui:print_error_message(error_message)
-    local html_error_message = "<p><font color='red'>" .. error_message .. "</font></p>"
-    self:print_html(html_error_message)
-end
+        if (selection) then
+            for index, selected_word in pairs(selection) do
+                return selected_word
+            end
+        else
+            return nil
+        end
+    end
 
--- Update the GUI. Useful to render partial updates before a method returns.
-function Gui:update()
-    self.dialog:update()
-end
+    -- Gets the value of the remove HTML head checkbox flag.
+    -- @return {boolean} `true` if the checkbox is checked, `false` otherwise.
+    function Gui:get_remove_head_flag()
+        return self.remove_head_checkbox:get_checked()
+    end
 
+    -- Print a timestamp in the specific label.
+    -- @param timestamp {Timestamp} The timestamp to print.
+    function Gui:print_timestamp(timestamp)
+        self.timestamp_label:set_text(timestamp:to_string())
+    end
+
+    -- Print a HTML text in the corresponding widget.
+    -- @param html {string} The HTML text content.
+    function Gui:print_html(html)
+        self.html_text_box:set_text(html)
+    end
+
+    -- Print a red-colored HTML error message.
+    -- @param error_message {string} The error message to print.
+    function Gui:print_error_message(error_message)
+        local html_error_message = "<p><font color='red'>" .. error_message .. "</font></p>"
+        self:print_html(html_error_message)
+    end
+
+    -- Update the GUI. Useful to render partial updates before a method returns.
+    function Gui:update()
+        self.dialog:update()
+    end
+
+-- class Gui end
 
 -- Class: OnlineSearch.
 -- Represents a search in a search engine.

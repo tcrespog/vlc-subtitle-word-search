@@ -1,5 +1,6 @@
-local lu = require('luaunit')
-local script = require('../subtitle_word_search')
+package.path = "../?.lua;" .. package.path
+local lu = require("luaunit")
+local script = require("subtitle_word_search")
 
 TestUtils = {} --class
 

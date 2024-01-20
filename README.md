@@ -41,7 +41,7 @@ Copy the `subtitle_word_search.lua` file in one of the following directories dep
 * Change the playing time, click the "**Refresh**" button and see the updated subtitles.
 * Select a word, select a search engine, and click the "**Search**" button.
 	* The web content will be displayed in the box at the bottom. You can also open the query link in your browser by clicking the "**Open in browser**" link.
-	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the "**Remove &lt;head&gt; tag**" box before making a search. 
+	* Sometimes, the style of some web pages is not rendered properly, you can try getting rid of the styles by removing the HTML `<head>` tag. Just check the "**Remove styles**" box before making a search. 
 
 ## Tips
 
@@ -91,3 +91,12 @@ The following images were taken for v1.1, but the current interface is similar.
     * [README.txt](https://github.com/videolan/vlc/blob/062edb354454161e431cb50e87e79e439968a2c4/share/lua/README.txt)
     * You can check the [history](https://github.com/videolan/vlc/commits/master/share/lua/README.txt) of the file to track changes in the API.
 * The VLC [forum](https://forum.videolan.org/viewforum.php?f=29) is useful to solve doubts about plugin development.
+
+## Testing
+
+There are some unit tests for the addon in the [test/](./test) directory. The tests are written using [LuaUnit](https://github.com/bluebird75/luaunit).
+
+To run the tests, [download](https://luabinaries.sourceforge.net/) and install Lua 5.1, and run the following command inside the `test/` directory:
+```shell
+lua test.lua
+```
